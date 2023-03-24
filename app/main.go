@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"os/exec"
 )
@@ -20,5 +21,13 @@ func main() {
 		panic(err)
 	}
 
-	cmd.Wait()
+	if err := cmd.Wait(); err != nil {
+		if exiterr, ok := err.(*exec.ExitError); ok {
+			code := exiterr.ExitCode()
+			os.Exit(code)
+		} else {
+			log.Fatalf("cmd.Wait: %v", err)
+			panic(err)
+		}
+	}
 }
